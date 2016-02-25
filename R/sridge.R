@@ -57,6 +57,7 @@ sridge <- function(x, y, cualcv.S = 5, nkeep = 5, numlam.S = 30, niter.S = 50, n
             cores <- min(detectCores(), ncores)
             try(cl <- makeCluster(cores))
         }
+        newclus <- FALSE
         try(registerDoParallel(cl))
         locallib<-.libPaths()[[1]]
         clusterExport(cl, "locallib", envir=environment())
