@@ -11,3 +11,5 @@ importFrom("robustHD","lambda0")
 
 export(mmlasso)
 export(sridge)
+export(sridge2)
+export(genlambdas)
