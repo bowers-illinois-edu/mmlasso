@@ -1,4 +1,4 @@
-sridge<-function(x,y,cualcv.S=5,numlam.S=30,niter.S=50,normin=0,denormout=0,alone=0,ncores=1){                 
+sridge<-function(x,y,cualcv.S=5,numlam.S=30,niter.S=50,normin=0,denormout=0,alone=0,ncores=1){
 #Solves n*s_n^2 +lam*||beta1||^2} = min. Adapted from Ricardo Maronna's original MATLAB code.
 #INPUT
 #cualcv.S: method for estimating prediction error. cualcv-fold cross-validation
@@ -105,7 +105,7 @@ edf<-fin$edf
 deltult<-max(c(deltult, 0.25))
 #c0: constant for consistency of final scale
 c0<-const_marina(deltult)
-sigma<-Mscale_mar(res,deltult,c0)   
+sigma<-Mscale_mar(res,deltult,c0)
 a_cor<-mean(psi_marina(res/sigma,c0)^2)
     b_cor <- mean(Mchi(res/sigma, c0, "bisquare", 2))
 c_cor<-mean(psi_marina(res/sigma,c0)*(res/sigma))
@@ -136,7 +136,7 @@ CVSE<-function(X,y,nfold,lam,gradlib,nkeep,niter.S){
   #niter.S : number of maximum iterations of IWLS
   #OUTPUT
   #mse: resulting MSE (estimated using a tau-scale)
-  
+
   ###Segment data
   n<-nrow(X)
   p<-ncol(X)
@@ -147,7 +147,7 @@ CVSE<-function(X,y,nfold,lam,gradlib,nkeep,niter.S){
   inint<-floor(seq(0,n,length.out=nfold+1))
     resid <- vector(mode = "numeric", length = n)
   ###
-  
+
   for (kk in 1:nfold){
     testk<-(inint[kk]+1):inint[kk+1]
         estik <- setdiff(indin, testk)
