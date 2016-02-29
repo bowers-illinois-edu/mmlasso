@@ -64,6 +64,12 @@ sridge <- function(x, y, cualcv.S = 5, nkeep = 5, numlam.S = 30, niter.S = 50, n
         clusterEvalQ(cl,.libPaths(locallib))
         ###
     }
+    if(alone == 0){
+        if(length(find("cl") != 1)){
+            newclus <- TRUE
+        }
+        newclus <- FALSE
+    }
 
     ### Parallel CV
     exp.se <- c("CVSE")
@@ -191,4 +197,137 @@ const_marina <- function(delta) {
         return(NULL)
     }
     return(cw)
+}
+
+
+#' A function to fit a ridge penalized MM-estimator
+#' This version does not do any cross-validation. It merely returns the fits at the chosen lambdas.
+sridge2 <- function(x, y, cualcv.S = 5, nkeep = 5, numlam.S = 30, niter.S = 50, normin = 0,
+    denormout = 0, alone = 0, ncores = 1, lamdas = NULL, deltas = NULL) {
+    # Solves n*s_n^2 +lam*||beta1||^2} = min. Adapted from Ricardo Maronna's original
+    # MATLAB code. INPUT cualcv.S: method for estimating prediction error.
+    # cualcv-fold cross-validation nkeep: number of candidates to be kept for full
+    # iteration in the Pena-Yohai procedure (default=5) normin: normalize input
+    # data?. 0=no, default ; 1=yes denormout: denormalize output?. 0=no, default ;
+    # 1=yes alone: are you calculating the estimator for its sake only? 0=no, default
+    # ; 1=yes numlam.S: number of lambda values, default 30 niter.S : number of
+    # maximum iterations of IWLS ncores : number of cores to use for parallel
+    # computations. Default is all available cores OUTPUT beta: (p+1)-vector of
+    # regression parameters, beta(1)=intercept fscale: M-estimate of scale of the
+    # final regression estimate edf: final equivalent degrees of freedom lamin:
+    # optimal lambda delmin: optimal delta
+
+    ### Center and scale covariates and response using median and mad
+    if (normin == 1) {
+        stop("Not able to scale by mad when most of variables are binary")
+        prep <- prepara(x, y)
+        Xnor <- prep$Xnor
+        ynor <- prep$ynor
+        mux <- prep$mux
+        sigx <- prep$sigx
+        muy <- prep$muy
+    } else {
+        Xnor <- x
+        ynor <- y
+    }
+
+    # Spherical Principal Components (no centering) privar, Beig= vector of robust
+    # 'eigenvalues' and matrix of eigenvectors Xnor is now = PCA scores
+    pca <- SPCC(Xnor)
+    privar <- pca$lamda
+    Beig <- pca$b
+    Xnor <- pca$scores
+    n <- nrow(Xnor)
+    p <- ncol(Xnor)
+    if(is.null(lamdas)){
+        privar <- privar * n  #Makes the robust eigenvalues of the same order as those of classical PCA used for LS
+        nlam <- min(c(p, numlam.S))
+        pmax <- min(c(p, n/2))  #edf<=n/2 to keep BDP >=0.25
+        pp <- seq(1, pmax, length = nlam)
+        lamdas <- findlam(privar, pp)  #find lambdas corresponding to the edf's
+        deltas <- 0.5 * (1 - (pp)/n)  #for the M-scale used with Penia-Yohai
+    }
+
+    resmaker <- function( Xnor, ynor, nkeep, niter.S, Beig){ ## , mux){
+        force(Xnor); force(ynor); force(nkeep); force(niter.S); force(Beig) ## ; force(mux)
+    function(lamda,delta){
+        fin <- rr_se(X = Xnor, y = ynor, lambda2 = lamda, deltaesc = delta, cc_scale = 1, nkeep, niter.S, epsilon = 1e-04)
+        beta <- fin$coef
+        betaslo <- beta[2:(length(beta))]
+        bint <- beta[1]
+        res <- ynor - Xnor %*% betaslo - as.vector(bint)
+        edf <- fin$edf
+        deltult <- 0.5 * (1 - (edf + 1)/n)  ## 'delta' for final scale
+        deltult <- max(c(deltult, 0.25))
+        # c0: constant for consistency of final scale
+        c0 <- const_marina(deltult)
+        sigma <- Mscale_mar(res, deltult, c0)
+        a_cor <- mean(psi_marina(res/sigma, c0)^2)
+        b_cor <- mean(Mchi(res/sigma, c0, "bisquare", 2))
+        c_cor <- mean(psi_marina(res/sigma, c0) * (res/sigma))
+        corr <- 1 + (edf + 1)/(2 * n) * (a_cor/(b_cor * c_cor))
+        fscale <- sigma * corr  #bias correction for final scale
+        # Back from PC to ordinary coordinates
+        betaslo <- Beig %*% betaslo
+
+        # De-normalize beta if required by user
+        ## if (normin == 1 & denormout == 1) {
+        ##     betaslo <- betaslo/sigx
+        ##     bint <- muy + bint - mux %*% betaslo
+        ## }
+        beta <- c(bint, betaslo)
+        re <- list(coef = beta, scale = fscale, edf = edf, lamda = lamdas, delta = deltas)
+        return(re)
+    }
+    }
+
+    getresults <- resmaker(Xnor, ynor, nkeep, niter.S, Beig) ## , mux)
+
+    if(ncores > 1){
+        ## assuming name of cluster is cl for now
+        clusterExport(cl,"getresults",envir=environment())
+        results <- parLapply(cl,1:length(lamdas), function(i){
+                          getresults(lamda=lamdas[[i]],delta=deltas[[i]])
+    })
+    } else {
+    results <- lapply(1:length(lamdas),function(i){
+                          getresults(lamda=lamdas[[i]],delta=deltas[[i]])
+    })
+    }
+
+    return(results)
+}
+
+#' Generate lambda sequences
+genlambdas <- function(x, y, normin = 0, numlam.S = 30) {
+
+    ### Center and scale covariates and response using median and mad
+    if (normin == 1) {
+        prep <- prepara(x, y)
+        Xnor <- prep$Xnor
+        ynor <- prep$ynor
+        mux <- prep$mux
+        sigx <- prep$sigx
+        muy <- prep$muy
+    } else {
+        Xnor <- x
+        ynor <- y
+    }
+
+    # Spherical Principal Components (no centering) privar, Beig= vector of robust
+    # 'eigenvalues' and matrix of eigenvectors Xnor is now = PCA scores
+    pca <- SPCC(Xnor)
+    privar <- pca$lamda
+    Beig <- pca$b
+    Xnor <- pca$scores
+    n <- nrow(Xnor)
+    p <- ncol(Xnor)
+    privar <- privar * n  #Makes the robust eigenvalues of the same order as those of classical PCA used for LS
+    nlam <- min(c(p, numlam.S))
+    pmax <- min(c(p, n/2))  #edf<=n/2 to keep BDP >=0.25
+    pp <- seq(1, pmax, length = nlam)
+    lamdas <- findlam(privar, pp)  #find lambdas corresponding to the edf's
+    deltas <- 0.5 * (1 - (pp)/n)  #for the M-scale used with Penia-Yohai
+
+    return(cbind(lamda=lamdas,delta=deltas))
 }
