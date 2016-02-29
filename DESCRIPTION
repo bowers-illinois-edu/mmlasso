@@ -1,8 +1,8 @@
 Package: mmlasso
 Type: Package
 Title: Robust and Sparse Estimators for Linear Regression Models
-Version: 1.3.3
-Date: 2015-11-28
+Version: 1.3.4
+Date: 2016-2-26
 Author: Ezequiel Smucler <ezequiels.90@gmail.com>
 Maintainer: Ezequiel Smucler <ezequiels.90@gmail.com>
 Description: Functions to calculate MM-Lasso and adaptive MM-Lasso estimators.

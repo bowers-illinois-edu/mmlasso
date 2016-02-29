@@ -2,32 +2,31 @@
 \alias{sridge}
 \title{Robust and Sparse Estimators for Linear Regression Models}
 \description{
-Function to calculate the S-Ridge estimator of Maronna (2011), adapted from Maronna's original code. It is not intended to be used on its own, but rather as an initial estimator for the MM-Lasso.
+Function to calculate the S-Ridge estimator of Maronna (2011), adapted from Maronna's original MATLAB code. It is not intended to be used on its own, but rather as an initial estimator for the MM-Lasso.
 }
 
 
-\usage{sridge(x,y,cualcv.S=5,nkeep=5,numlam.S=30,niter.S=50,normin=0,
-          denormout=0,alone=0,ncores=Inf)}
+\usage{sridge(x,y,cualcv.S=5,numlam.S=30,niter.S=50,normin=0,
+          denormout=0,alone=0,ncores=1)}
 \arguments{
   \item{x}{A matrix of carriers. Intercept is added automatically.}
   \item{y}{A vector of response variables.}
     \item{cualcv.S}{A natural number greater than 2. Method for estimating prediction error of S-Ridge: cualcv-fold cross validation. Default is 5.}
-  \item{nkeep}{Number of candidates to be kept for full iteration in the Penia-Yohai procedure. Default is 5)}
   \item{numlam.S}{Number of candidate penalization parameter values for S-Ridge. Default is 30.}
   \item{niter.S}{Maximum number of iterations of IWLS for S-Ridge. Default is 50.}
   \item{normin}{Center and scale input data? 0=no, default ; 1=yes.}
   \item{denormout}{Return final estimate in the original coordinates? 0=no, default ; 1=yes.}
   \item{alone}{Are you calculating the estimator for its sake only? 0=no, default ; 1=yes.}
-  \item{ncores}{Number of cores to use for parallel computations. Default is all available cores.}
+  \item{ncores}{Number of cores to use for parallel computations. Default is one core.}
 
 }
 
 \value{
- \item{beta}{S-Ridge estimate. First coordinate is the intercept.}
- \item{fscale}{M-estimate of scale of the residuals of the final regression estimate.}
+ \item{coef}{S-Ridge estimate. First coordinate is the intercept.}
+ \item{scale}{M-estimate of scale of the residuals of the final regression estimate.}
  \item{edf}{Final equivalent degrees of freedom.}
-\item{lamin}{Optimal lambda.}
-\item{delmin}{Optimal delta.}
+\item{lamda}{Optimal lambda.}
+\item{delta}{Optimal delta.}
 }
 \author{
 Ezequiel Smucler, \email{ezequiels.90@gmail.com}.
@@ -60,7 +59,7 @@ y <- x\%*\%beta.true[2:(p+1)]+beta.true[1]+u
 ###Calculate estimators
 
 set.seed(1234)
-SRidge <- sridge(x,y,normin=1,denormout=1,alone=1,ncores=1)
+SRidge <- sridge(x,y,normin=1,denormout=1,alone=1)
 }
 
 \keyword{models}

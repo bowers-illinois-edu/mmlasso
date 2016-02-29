@@ -221,7 +221,7 @@ List MMLassoCpp1(arma::mat x,arma::vec y, arma::vec beta_ini, double scale_ini,d
   arma::mat xjotamat = mat(n,p);
   arma::vec xjota = vec(n);
   arma::vec yast = vec(n);
-  arma::vec alpha = vec(n);
+  arma::vec alpha = vec(p);
   arma::vec w=vec(n);
   arma::vec resid_n = y - x*beta_ini;
   List ret;
@@ -231,7 +231,11 @@ List MMLassoCpp1(arma::mat x,arma::vec y, arma::vec beta_ini, double scale_ini,d
   xjota = xast.col(0);
   xastrun = xast;
   xastrun.shed_col(0);
-  alpha = xastrun.t()*xjota/dot(xjota,xjota);
+  if (sum(abs(xjota))>0){
+    alpha = xastrun.t()*xjota/dot(xjota,xjota);
+  } else{
+    alpha= zeros(p);
+  }
   xjotamat = repmat(xjota,1,p);
   xort = xastrun - xjotamat*diagmat(alpha);
   ret["xort"] = xort;
@@ -245,7 +249,13 @@ List MMLassoCpp1(arma::mat x,arma::vec y, arma::vec beta_ini, double scale_ini,d
 // [[Rcpp::export]]
 List MMLassoCpp2(arma::vec xjota,arma::vec yast, arma::vec beta_lars, arma::vec beta_o,arma::vec alpha){
   int p = beta_lars.n_elem;
-  double beta_n_int = dot(xjota,yast)/dot(xjota,xjota)-dot(beta_lars,alpha);
+  double beta_n_int = 0;
+  if (sum(abs(xjota))>0){
+    beta_n_int = dot(xjota,yast)/dot(xjota,xjota)-dot(beta_lars,alpha);
+  } else{
+    beta_n_int= 0;
+  }
+  
   arma::vec beta_n = vec(p+1);
   arma::vec u = vec(p+1);
   double tol;
@@ -325,7 +335,11 @@ List desrobrid(arma::mat x, arma::vec y,int niter,double lam,double betinte,arma
     qr_econ(Q_xau,R_xau,xau);
     beta = solve(R_xau,Q_xau.t()*yau);
     resin = y-x*beta;
-    binter = sum(resin%w)/sum(w);
+    if (sum(w)>0){
+      binter = sum(resin%w)/sum(w);
+      }else{
+        binter = median(resin);
+      }
     res =resin-binter ;
     sig = Mscale_mar(res,delsca,cc);
     crit = n*pow(sig,2)+lam*dot(beta,beta);
@@ -381,10 +395,9 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
 //  X,y: data
 //  lambda2:l2-penalty
 //  deltaesc:delta for initial M-scale estimator
-//  nkeep:number of initial candidates selected
+//  nkeep:number of initial candidates selected, Obs: hard-coded nkeep=5 for now
 //  niter:number of IWLS iterations
 //  prosac: proportion of observations removed based on PSC(=deltaesc by default)
-//  nkeep: instead of using 3*(p+1)+1 initial estimators we can select the best `nkeep` candidates to perform full IWLS iterations. 
 //  epsilon: effective zero
 //  OUTPUT
 //  coef: coefficients of the estimated regression vector

@@ -1,0 +1,11 @@
+Changes in mmlasso version 1.3.4
+
+    + Some bugfixes in the C++ code.
+
+    + Fixed a bug in the default parameters for sridge.
+
+    + Default behavior for mmlasso and sridge now is to use only one core.
+
+    + Fixed errata in the sridge help page.
+
+

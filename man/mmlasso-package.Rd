@@ -11,8 +11,8 @@ Functions to calculate the MM-Lasso and adaptive MM-Lasso estimators proposed in
 \tabular{ll}{
 Package: \tab mmlasso\cr
 Type: \tab Package\cr
-Version: \tab 1.3.3\cr
-Date: \tab 2015-11-28\cr
+Version: \tab 1.3.4\cr
+Date: \tab 2016-2-26\cr
 License: \tab GPL (>= 2)\cr
 Imports: \tab Rcpp, robustHD, robustbase, parallel, doParallel, foreach, MASS\cr
 LinkingTo: \tab Rcpp, RcppArmadillo\cr
@@ -62,5 +62,5 @@ y <- x\%*\%beta.true[2:(p+1)]+beta.true[1]+u
 ###Calculate estimators
 
 set.seed(1234)
-RobSparse <- mmlasso(x,y,ncores=1)
+RobSparse <- mmlasso(x,y)
 }

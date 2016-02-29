@@ -7,7 +7,7 @@ Function to calculate the MM-Lasso and adaptive MM-Lasso estimators proposed in 
 
 
 \usage{mmlasso(x, y, varsigma=1, cualcv.mm=5, cualcv.S=5,
-        numlam.mm=30, numlam.S=30, niter.S=50, niter.mm=50, ncores=Inf)}
+        numlam.mm=30, numlam.S=30, niter.S=50, niter.mm=50, ncores=1)}
 \arguments{
   \item{x}{A matrix of carriers. Intercept is added automatically.}
   \item{y}{A vector of response variables.}
@@ -18,7 +18,7 @@ Function to calculate the MM-Lasso and adaptive MM-Lasso estimators proposed in 
   \item{numlam.S}{Number of candidate penalization parameter values for S-Ridge. Default is 30.}
   \item{niter.mm}{Maximum number of weighted Lasso iterations for MM and adaptive MM-Lasso. Default is 50.}
   \item{niter.S}{Maximum number of iterations of IWLS for S-Ridge. Default is 50.}
-  \item{ncores}{Number of cores to use for parallel computations. Default is all available cores.}
+  \item{ncores}{Number of cores to use for parallel computations. Default is one core.}
 }
 
 \value{
@@ -56,7 +56,7 @@ y <- x\%*\%beta.true[2:(p+1)]+beta.true[1]+u
 ###Calculate estimators
 
 set.seed(1234)
-RobSparse <- mmlasso(x,y,ncores=1)
+RobSparse <- mmlasso(x,y)
 }
 
 \keyword{models}
