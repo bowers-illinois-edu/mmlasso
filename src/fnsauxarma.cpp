@@ -11,7 +11,7 @@ arma::vec rho_marina(arma::vec x,double cw) {
   for(int i = 0; i < n; ++i) {
     if (fabs(x[i])>=cw)
       out[i]=1;
-    else 
+    else
       out[i]=1-pow(1-pow(x[i]/cw,2),3);
   }
   return out;
@@ -24,7 +24,7 @@ arma::vec rho_bisq(arma::vec x,double cw) {
   for(int i = 0; i < n; ++i) {
     if (fabs(x[i])>=cw)
       out[i]=1;
-    else 
+    else
       out[i]=1-pow(1-pow(x[i]/cw,2),3);
   }
   return out;
@@ -38,10 +38,10 @@ arma::vec psi_marina(arma::vec x, double cw){
   for(int i = 0; i < n; ++i) {
     if (fabs(x[i])>=cw)
       out[i]=0;
-    else 
+    else
       out[i]=6*(x[i]/pow(cw,2))*pow(1-pow(x[i]/cw,2),2);
   }
-  return out;  
+  return out;
 }
 
 // [[Rcpp::export]]
@@ -51,7 +51,7 @@ arma::vec weight_marina(arma::vec x,double cw){
   for(int i = 0; i < n; ++i) {
     if (x[i]==0)
       out[i]=1;
-    else if(fabs(x[i])<=cw){ 
+    else if(fabs(x[i])<=cw){
       out[i]=pow(1-pow(x[i]/cw,2),2);}
     else if (fabs(x[i])>cw){
       out[i]=0;}
@@ -116,7 +116,7 @@ double scale_tau(arma::vec x){
 
 
 arma::vec spa_med(arma::mat x){
-  //Spatial M-median , w=weights 
+  //Spatial M-median , w=weights
   int n = x.n_rows;
   double del0 = 1.e-6;
   double deldis = 0;
@@ -201,7 +201,7 @@ List MMLassoCpp_ini(arma::mat xx,arma::vec y, arma::vec beta_ini){
   int p=xx.n_cols;
   arma::mat x = mat(n,0);
   List ret;
-  x.insert_cols(0, ones(n,1)); 
+  x.insert_cols(0, ones(n,1));
   x.insert_cols(1,xx) ;
   arma::vec resid_n = y - x*beta_ini;
   ret["x"] = x;
@@ -255,7 +255,7 @@ List MMLassoCpp2(arma::vec xjota,arma::vec yast, arma::vec beta_lars, arma::vec 
   } else{
     beta_n_int= 0;
   }
-  
+
   arma::vec beta_n = vec(p+1);
   arma::vec u = vec(p+1);
   double tol;
@@ -352,7 +352,7 @@ List desrobrid(arma::mat x, arma::vec y,int niter,double lam,double betinte,arma
   beta_fin[0] = binter;
   for(int i = 1; i <= p; ++i) {
     beta_fin[i] = beta[i-1];
-  } 
+  }
   edf_pre = sum (pow(Q_xau,2),1);
   for(int j = 1; j <= n; ++j) {
     edf += edf_pre[j-1];
@@ -374,7 +374,7 @@ List regrid(arma::mat x,arma:: vec y,double lambda){
   arma::vec yau = vec(n+p);
   arma::vec beta = vec(p+1);
   List ret;
-  x.insert_cols(0, ones(n,1)); 
+  x.insert_cols(0, ones(n,1));
   xext = sqrt(lambda)*eye(p,p);
   xext.insert_cols(0,zeros(p));
   xau = join_cols(x,xext);
@@ -387,10 +387,10 @@ List regrid(arma::mat x,arma:: vec y,double lambda){
 }
 
 // [[Rcpp::export]]
-List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_scale, int nkeep, int niter, double epsilon){
+List rr_se(arma::mat & X, arma::vec & y,double & lambda2, double & deltaesc, double & cc_scale, int & nkeep, int & niter, double & epsilon){
 //  Initial estimator: adapted Pena-Yohai (P&Y) for Ridge Regression (details in Maronna, Technometrics 2011)
 //  3*(p+1)+1 initial LS-Ridge estimators based on original and clean samples are computed
-//  The estimate (or nkeep estimates) that minimizes the S-Ridge objective function is used as the initial estimator(s). 
+//  The estimate (or nkeep estimates) that minimizes the S-Ridge objective function is used as the initial estimator(s).
 //  INPUT
 //  X,y: data
 //  lambda2:l2-penalty
@@ -406,11 +406,11 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
   int n = X.n_rows;
   int p = X.n_cols;
   int m = floor(deltaesc*n);
-  arma::mat Xuno = mat(n,p+1); 
+  arma::mat Xuno = mat(n,p+1);
   Xuno = join_rows(ones(n,1),X);
   arma::vec critkeep = vec(3*p+4);
   arma::mat betakeep = mat(p+1,3*p+4);
-  double lamLS_2 = lambda2;  
+  double lamLS_2 = lambda2;
   //corrects lambda to match RR-LS. Appendix Maronna (2012)
   //double factr = 12.68451+(-46.97558)*(deltaesc-0.25)+91.72468*(deltaesc-0.25)*(deltaesc-0.35);
   double factr = 23.9716 -73.4391*deltaesc+ 64.9480*pow(deltaesc,2);
@@ -423,7 +423,7 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
   arma::vec betaslo = vec(p);
   arma::vec resj = yau-Xau*betaj;
   arma::vec restrun = vec(n);
-  
+
   //Singular Value Decomposition to obtain the H matrix
   List svd_Xau = my_svdecon(Xau);
   arma::mat svd_U = svd_Xau["U"];
@@ -448,12 +448,12 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
   //each columns of Z represent the forecast change for each observation in the direction of u_j (col of U)
   restrun = resj.rows(0,n-1);
   betaslo = betaj.rows(1,p);
-  //Compute the M-scale for the LS-Ridge and value of objective function to be minimized by RR-SE 
+  //Compute the M-scale for the LS-Ridge and value of objective function to be minimized by RR-SE
   sigj = Mscale_mar(restrun,deltaesc,cc_scale);
   critkeep[0] = n*pow(sigj,2)+lam0_2*dot(betaslo,betaslo);
   betakeep.col(0) = betaj;
 
-  
+
   int n1 = n-m; //new sample size
   double lam2 = lamLS_2*n1/n; //corrects lambda for LS-Ridge to acknowledge new sample size
   arma::mat Xord = mat(n,p);
@@ -465,10 +465,10 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
   arma::uvec ordt = uvec(n);
   int l = 1;
   List listaj;
-  
+
   for(int j = 0; j <=p ; ++j) {
-      //Remove m observations with the highest forcast change (i.e., m-highest z_ij, order(zj) the sort is increasing) 
-      ordt = sort_index(Z.col(j));    
+      //Remove m observations with the highest forcast change (i.e., m-highest z_ij, order(zj) the sort is increasing)
+      ordt = sort_index(Z.col(j));
       Xord = X.rows(ordt);
       yord = y.rows(ordt);
       Xj = Xord.rows(0,n1-1);
@@ -480,9 +480,9 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
       sigj = Mscale_mar(resj,deltaesc,cc_scale);
       critkeep[l] = n*pow(sigj,2)+lam0_2*dot(betaslo,betaslo);
       betakeep.col(l) = betaj;
-      
-      //Remove m observations with the lowest forcast change (i.e., m-highest z_ij, order(zj) the sort is decreasing) 
-      ordt = sort_index(Z.col(j),"descend");    
+
+      //Remove m observations with the lowest forcast change (i.e., m-highest z_ij, order(zj) the sort is decreasing)
+      ordt = sort_index(Z.col(j),"descend");
       Xord = X.rows(ordt);
       yord = y.rows(ordt);
       Xj = Xord.rows(0,n1-1);
@@ -494,9 +494,9 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
       sigj = Mscale_mar(resj,deltaesc,cc_scale);
       critkeep[l+1] = n*pow(sigj,2)+lam0_2*dot(betaslo,betaslo);
       betakeep.col(l+1) = betaj2;
-      
-      //Remove m observations with the highest absolute forcast change (large absolute values) 
-      ordt = sort_index(abs(Z.col(j)));    
+
+      //Remove m observations with the highest absolute forcast change (large absolute values)
+      ordt = sort_index(abs(Z.col(j)));
       Xord = X.rows(ordt);
       yord = y.rows(ordt);
       Xj = Xord.rows(0,n1-1);
@@ -510,15 +510,15 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
       betakeep.col(l+2) = betaj3;
       l += 3;
   }
-  
+
   //Find the nkeep best initial estimators based to perform full iterations of IWLS #Esto es un poco como Croux
-  
+
   arma::uvec ii = sort_index(critkeep);
   betakeep = betakeep.cols(ii);
-  
 
-  
-  
+
+
+
 //For each candidate initial estimator, we iterate weigthed normal equations niter times until a local minimum of RR-SE objective function is found
   arma::vec crit_fin = vec(5);
   arma::mat beta_fin = mat(p+1,5);
@@ -542,5 +542,27 @@ List rr_se(arma::mat X, arma::vec y,double lambda2, double deltaesc, double cc_s
   ret["coef"] = coef;
   ret["edf"] = edf;
   ret["objF"] = objF;
+  return ret;
+}
+
+
+// [[Rcpp::export]]
+List rr_se_vec(arma::mat & X, arma::vec & y,arma::vec & lambda2, arma::vec & deltaesc, double & cc_scale, int & nkeep, int & niter, double & epsilon){
+  // A function to calculate the S-ridge estimator for many lambdas
+  double nlam = lambda2.n_elem;
+  double p = X.n_cols;
+  List tmpres;
+  List ret;
+  arma::vec edfs(nlam);
+  arma::mat betas(p+1,nlam);
+  arma::vec tmpcoef;
+  for(int i=0 ; i <= nlam; i++){
+    List tmpres = rr_se( X , y, lambda2[i], deltaesc[i], cc_scale, nkeep, niter, epsilon);
+    edfs[i] = tmpres["edf"];
+    tmpcoef = as<vec>(tmpres["coef"]);
+    betas.col(i) = tmpcoef;
+  }
+  ret["beta"] = betas;
+  ret["edf"] = edfs;
   return ret;
 }
