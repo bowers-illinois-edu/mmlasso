@@ -234,6 +234,7 @@ sridge2 <- function(x,  y,  cualcv.S = 5,  nkeep = 5,  numlam.S = 30,  niter.S =
     } else {
         Xnor <- x
         ynor <- y
+        sigx <- rep(1, ncol(x))
     }
 
     #  Spherical Principal Components (no centering) privar,  Beig= vector of robust
@@ -276,32 +277,40 @@ sridge2 <- function(x,  y,  cualcv.S = 5,  nkeep = 5,  numlam.S = 30,  niter.S =
             #  Back from PC to ordinary coordinates
             betaslo <- Beig %*% betaslo
             if(adaptive){
-                activ <- which(betaslo!=0)
+                activ <- which(abs(beta[2:length(beta)]) > .Machine$double.eps)
                 ###Take out covariates not chosen by MMLasso and scale the remaining ones
-                w.ad <- abs(betaslo[activ])
-                xnor.w <- as.matrix(scale(xnor[, activ], center=FALSE,  scale = 1/w.ad))
+                w.ad <- abs(beta[2:length(beta)][activ])
+                Xnor.w <- as.matrix(scale(Xnor[, activ], center=FALSE,  scale = 1/w.ad))
                 ###Calculate candidate lambdas for adaptive MM-ridge
-                lambda.ad <- genlambdas(xnor.w, ynor, nlam=length(lambdas))
-                fin.ad <- rr_se(X = xnor.w,  y = ynor,  lambda2 = lamda.ad[, "lamda"],
-                                deltaesc = lambda.ad[, "delta"],
+                lamda.ad <- genlambdas(Xnor.w, ynor, numlam.S=length(lamdas))
+                fin.ad <- rr_se(X = Xnor.w,  y = ynor,  lambda2 = lamda.ad[, "lamda"],
+                                deltaesc = lamda.ad[, "delta"],
                                 cc_scale = 1,  nkeep,  niter.S,  epsilon = 1e-04)
                 beta.ad <- fin.ad$coef
-                betaslo.ad <- beta.ad[2:(length(beta.ad))]
-                bint <- beta.ad[1]
-                res <- ynor - Xnor.w %*% betaslo.ad - as.vector(bint)
-                edf <- fin.ad$edf
-                deltult <- 0.5 * (1 - (edf + 1)/n)  ##  'delta' for final scale
-                deltult <- max(c(deltult,  0.25))
+                betaslo.ad <- rep(0,p)
+                betaslo.ad[activ] <- beta.ad[2:(length(beta.ad))] * w.ad
+                betaslo.ad <- betaslo.ad ## for now, staying very close to code in mmlasso.R
+                bint.ad <- beta.ad[1]
+                res.ad <- ynor - Xnor.w %*% betaslo.ad - as.vector(bint)
+                edf.ad <- fin.ad$edf
+                deltult.ad <- 0.5 * (1 - (edf.ad + 1)/n)  ##  'delta' for final scale
+                deltult.ad <- max(c(deltult.ad,  0.25))
                 #  c0: constant for consistency of final scale
-                c0 <- const_marina(deltult)
-                sigma <- Mscale_mar(res,  deltult,  c0)
-                a_cor <- mean(psi_marina(res/sigma,  c0)^2)
-                b_cor <- mean(Mchi(res/sigma,  c0,  "bisquare",  2))
-                c_cor <- mean(psi_marina(res/sigma,  c0) * (res/sigma))
-                corr <- 1 + (edf + 1)/(2 * n) * (a_cor/(b_cor * c_cor))
-                fscale <- sigma * corr  # bias correction for final scale
+                c0.ad <- const_marina(deltult.ad)
+                sigma.ad <- Mscale_mar(res.ad,  deltult.ad,  c0.ad)
+                a_cor.ad <- mean(psi_marina(res.ad/sigma.ad,  c0.ad)^2)
+                b_cor.ad <- mean(Mchi(res.ad/sigma.ad,  c0.ad,  "bisquare",  2))
+                c_cor.ad <- mean(psi_marina(res.ad/sigma.ad,  c0.ad) * (res.ad/sigma.ad))
+                corr.ad <- 1 + (edf.ad + 1)/(2 * n) * (a_cor.ad/(b_cor.ad * c_cor.ad))
+                fscale.ad <- sigma.ad * corr.ad  # bias correction for final scale
                 #  Back from PC to ordinary coordinates
-                betaslo <- Beig %*% betaslo
+                betaslo.ad <- Beig %*% betaslo.ad
+                bint <- bint.ad
+                betaslo <- betaslo.ad
+                fscale <- fscale.ad
+                edf <- edf.ad
+            } else {
+                lamda.ad <- t(c(lamda=NA, delta=NA))
             }
 
             ##  De-normalize beta if required by user
@@ -310,7 +319,8 @@ sridge2 <- function(x,  y,  cualcv.S = 5,  nkeep = 5,  numlam.S = 30,  niter.S =
             ##      bint <- muy + bint - mux %*% betaslo
             ##  }
             beta <- c(bint,  betaslo)
-            re <- list(coef = beta,  scale = fscale,  edf = edf,  lamda = lamdas,  delta = deltas)
+            re <- list(coef = beta,  scale = fscale,  edf = edf,  lamda = lamdas,  delta = deltas, 
+                       lamda.ad = lamda.ad[,"lamda"], delta.ad = lamda.ad[,"delta"])
             return(re)
         }
     }
