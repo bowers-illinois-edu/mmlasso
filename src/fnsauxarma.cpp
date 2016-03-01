@@ -549,18 +549,18 @@ List rr_se(arma::mat & X, arma::vec & y,double & lambda2, double & deltaesc, dou
 // [[Rcpp::export]]
 List rr_se_vec(arma::mat & X, arma::vec & y,arma::vec & lambda2, arma::vec & deltaesc, double & cc_scale, int & nkeep, int & niter, double & epsilon){
   // A function to calculate the S-ridge estimator for many lambdas
-  double nlam = lambda2.n_elem;
-  double p = X.n_cols;
-  List tmpres;
-  List ret;
+  double nlam = lambda2.n_rows;
+  double p = X.n_cols + 1;
+  List tmpres(3);
+  List ret(2);
   arma::vec edfs(nlam);
-  arma::mat betas(p+1,nlam);
-  arma::vec tmpcoef;
-  for(int i=0 ; i <= nlam; i++){
-    List tmpres = rr_se( X , y, lambda2[i], deltaesc[i], cc_scale, nkeep, niter, epsilon);
-    edfs[i] = tmpres["edf"];
-    tmpcoef = as<vec>(tmpres["coef"]);
-    betas.col(i) = tmpcoef;
+  arma::mat betas(p,nlam);
+  for(int i=0 ; i < nlam; i++){
+    tmpres = rr_se( X , y, lambda2(i), deltaesc(i), cc_scale, nkeep, niter, epsilon);
+    edfs(i) = as<double>(tmpres["edf"]);
+    // Rcpp::Rcout << edfs(i) << std::endl;
+    betas.col(i) = as<arma::colvec>(tmpres["coef"]);
+    // Rcpp::Rcout << betas.col(i) << std::endl;
   }
   ret["beta"] = betas;
   ret["edf"] = edfs;
