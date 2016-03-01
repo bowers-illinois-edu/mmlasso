@@ -562,7 +562,7 @@ List rr_se_vec(arma::mat & X, arma::vec & y,arma::vec & lambda2, arma::vec & del
     betas.col(i) = as<arma::colvec>(tmpres["coef"]);
     // Rcpp::Rcout << betas.col(i) << std::endl;
   }
-  ret["beta"] = betas;
+  ret["coef"] = betas;
   ret["edf"] = edfs;
   return ret;
 }
