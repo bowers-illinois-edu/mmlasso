@@ -174,7 +174,6 @@ mmlasso<-function(x,y,varsigma=1,cualcv.mm=5,cualcv.S=5,numlam.mm=30,numlam.S=30
   beta.SE<-c(beta.SE.int,beta.SE.slo)
 
   ###
-
   re<-list(coef.MMLasso.ad=beta.MMLasso.ad,coef.MMLasso=beta.MMLasso,coef.SE=beta.SE)
 
   return(re)
