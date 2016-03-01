@@ -48,3 +48,8 @@ MMLassoCpp2 <- function(xjota, yast, beta_lars, beta_o, alpha) {
 rr_se <- function(X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon) {
     .Call('mmlasso_rr_se', PACKAGE = 'mmlasso', X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon)
 }
+
+rr_se_vec <- function(X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon) {
+    .Call('mmlasso_rr_se_vec', PACKAGE = 'mmlasso', X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon)
+}
+
