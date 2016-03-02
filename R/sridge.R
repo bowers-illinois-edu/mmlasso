@@ -345,6 +345,7 @@ sridge2 <- function(x,  y,  cualcv.S = 5,  nkeep = 5,  numlam.S = 30,  niter.S =
                                 })
         }
 
+	return(results)
     }
 }
 
