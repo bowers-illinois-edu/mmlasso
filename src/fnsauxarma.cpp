@@ -1,9 +1,7 @@
 #include <RcppArmadillo.h>
-
-// [[Rcpp::depends(RcppArmadillo)]]
-
 using namespace Rcpp;
 using namespace arma;
+// [[Rcpp::depends(RcppArmadillo)]]
 
 // [[Rcpp::export]]
 arma::vec rho_marina(arma::vec x,double cw) {
@@ -33,7 +31,7 @@ arma::vec rho_bisq(arma::vec x,double cw) {
 
 
 // [[Rcpp::export]]
-arma::vec psi_marina(arma::vec & x, double & cw){
+arma::vec psi_marina(arma::vec x, double cw){
   int n = x.size();
   arma::vec out(n);
   for(int i = 0; i < n; ++i) {
@@ -62,7 +60,7 @@ arma::vec weight_marina(arma::vec x,double cw){
 
 
 // [[Rcpp::export]]
-double Mscale_mar(arma::vec x,double & b, double & cc) {
+double Mscale_mar(arma::vec x,double b, double cc) {
   int n = x.size();
   double sc = median(abs(x)) / 0.6745;
   double sc2 = 0;
@@ -80,7 +78,7 @@ double Mscale_mar(arma::vec x,double & b, double & cc) {
 }
 
 // [[Rcpp::export]]
-double Mscale_bisq(arma::vec  x,double  b, double  cc, int cuad) {
+double Mscale_bisq(arma::vec x,double b, double cc, int cuad) {
   int n = x.size();
   double sc = median(abs(x)) / 0.6745;
   double sc2 = 0;
@@ -99,7 +97,7 @@ double Mscale_bisq(arma::vec  x,double  b, double  cc, int cuad) {
 }
 
 // [[Rcpp::export]]
-double scale_tau(arma::vec & x){
+double scale_tau(arma::vec x){
   int n = x.n_elem;
   double c2 = 3;
   arma::vec x_dot = abs(x);
@@ -197,7 +195,7 @@ List SPCC(arma::mat & x){
 
 
 // [[Rcpp::export]]
-List MMLassoCpp_ini(arma::mat & xx, arma::vec & y, arma::vec & beta_ini){
+List MMLassoCpp_ini(arma::mat & xx, arma::vec y, arma::vec beta_ini){
   int n=xx.n_rows;
   int p=xx.n_cols;
   arma::mat x = mat(n,0);
@@ -213,7 +211,7 @@ List MMLassoCpp_ini(arma::mat & xx, arma::vec & y, arma::vec & beta_ini){
 }
 
 // [[Rcpp::export]]
-List MMLassoCpp1(arma::mat & x,arma::vec & y, arma::vec & beta_ini, double & scale_ini,double & c1){
+List MMLassoCpp1(arma::mat & x,arma::vec y, arma::vec beta_ini, double scale_ini,double c1){
   int n=x.n_rows;
   int p=x.n_cols-1;
   arma::mat xast = mat(n,p+1);
@@ -248,7 +246,7 @@ List MMLassoCpp1(arma::mat & x,arma::vec & y, arma::vec & beta_ini, double & sca
 
 
 // [[Rcpp::export]]
-List MMLassoCpp2(arma::vec & xjota, arma::vec & yast, arma::vec & beta_lars, arma::vec & beta_o, arma::vec & alpha){
+List MMLassoCpp2(arma::vec xjota, arma::vec yast, arma::vec beta_lars, arma::vec beta_o, arma::vec alpha){
   int p = beta_lars.n_elem;
   double beta_n_int = 0;
   if (sum(abs(xjota))>0){
@@ -366,7 +364,7 @@ List desrobrid(arma::mat x, arma::vec y, int niter, double lam, double betinte, 
 }
 
 // [[Rcpp::export]]
-List regrid(arma::mat & x,arma::vec & y, double & lambda){
+List regrid(arma::mat x,arma::vec y, double lambda){
   int n = x.n_rows;
   int p = x.n_cols;
   arma::mat xau = mat(n+p,p+1);
@@ -388,7 +386,7 @@ List regrid(arma::mat & x,arma::vec & y, double & lambda){
 }
 
 // [[Rcpp::export]]
-List rr_se(arma::mat & X, arma::vec & y,double & lambda2, double & deltaesc, double & cc_scale, int & nkeep, int & niter, double & epsilon){
+List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc_scale, int nkeep, int niter, double epsilon){
   //  Initial estimator: adapted Pena-Yohai (P&Y) for Ridge Regression (details in Maronna, Technometrics 2011)
   //  3*(p+1)+1 initial LS-Ridge estimators based on original and clean samples are computed
   //  The estimate (or nkeep estimates) that minimizes the S-Ridge objective function is used as the initial estimator(s).
@@ -545,7 +543,7 @@ List rr_se(arma::mat & X, arma::vec & y,double & lambda2, double & deltaesc, dou
 
 
 // [[Rcpp::export]]
-List rr_se_vec(arma::mat & X, arma::vec & y,arma::vec & lambda2, arma::vec & deltaesc, double & cc_scale, int & nkeep, int & niter, double & epsilon){
+List rr_se_vec(arma::mat & X, arma::vec y,arma::vec lambda2, arma::vec deltaesc, double cc_scale, int nkeep, int niter, double epsilon){
   // A function to calculate the S-ridge estimator for many lambdas
   double nlam = lambda2.n_rows;
   double p = X.n_cols + 1;
@@ -564,3 +562,4 @@ List rr_se_vec(arma::mat & X, arma::vec & y,arma::vec & lambda2, arma::vec & del
   ret["edf"] = edfs;
   return ret;
 }
+
