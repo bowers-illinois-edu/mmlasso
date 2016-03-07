@@ -31,13 +31,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // psi_marina
-arma::vec psi_marina(arma::vec& x, double& cw);
+arma::vec psi_marina(arma::vec x, double cw);
 RcppExport SEXP mmlasso_psi_marina(SEXP xSEXP, SEXP cwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double& >::type cw(cwSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type cw(cwSEXP);
     __result = Rcpp::wrap(psi_marina(x, cw));
     return __result;
 END_RCPP
@@ -55,14 +55,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // Mscale_mar
-double Mscale_mar(arma::vec x, double& b, double& cc);
+double Mscale_mar(arma::vec x, double b, double cc);
 RcppExport SEXP mmlasso_Mscale_mar(SEXP xSEXP, SEXP bSEXP, SEXP ccSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< double& >::type cc(ccSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< double >::type cc(ccSEXP);
     __result = Rcpp::wrap(Mscale_mar(x, b, cc));
     return __result;
 END_RCPP
@@ -82,12 +82,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // scale_tau
-double scale_tau(arma::vec& x);
+double scale_tau(arma::vec x);
 RcppExport SEXP mmlasso_scale_tau(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
     __result = Rcpp::wrap(scale_tau(x));
     return __result;
 END_RCPP
@@ -137,44 +137,44 @@ BEGIN_RCPP
 END_RCPP
 }
 // MMLassoCpp_ini
-List MMLassoCpp_ini(arma::mat& xx, arma::vec& y, arma::vec& beta_ini);
+List MMLassoCpp_ini(arma::mat& xx, arma::vec y, arma::vec beta_ini);
 RcppExport SEXP mmlasso_MMLassoCpp_ini(SEXP xxSEXP, SEXP ySEXP, SEXP beta_iniSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::mat& >::type xx(xxSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type beta_ini(beta_iniSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta_ini(beta_iniSEXP);
     __result = Rcpp::wrap(MMLassoCpp_ini(xx, y, beta_ini));
     return __result;
 END_RCPP
 }
 // MMLassoCpp1
-List MMLassoCpp1(arma::mat& x, arma::vec& y, arma::vec& beta_ini, double& scale_ini, double& c1);
+List MMLassoCpp1(arma::mat& x, arma::vec y, arma::vec beta_ini, double scale_ini, double c1);
 RcppExport SEXP mmlasso_MMLassoCpp1(SEXP xSEXP, SEXP ySEXP, SEXP beta_iniSEXP, SEXP scale_iniSEXP, SEXP c1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type beta_ini(beta_iniSEXP);
-    Rcpp::traits::input_parameter< double& >::type scale_ini(scale_iniSEXP);
-    Rcpp::traits::input_parameter< double& >::type c1(c1SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta_ini(beta_iniSEXP);
+    Rcpp::traits::input_parameter< double >::type scale_ini(scale_iniSEXP);
+    Rcpp::traits::input_parameter< double >::type c1(c1SEXP);
     __result = Rcpp::wrap(MMLassoCpp1(x, y, beta_ini, scale_ini, c1));
     return __result;
 END_RCPP
 }
 // MMLassoCpp2
-List MMLassoCpp2(arma::vec& xjota, arma::vec& yast, arma::vec& beta_lars, arma::vec& beta_o, arma::vec& alpha);
+List MMLassoCpp2(arma::vec xjota, arma::vec yast, arma::vec beta_lars, arma::vec beta_o, arma::vec alpha);
 RcppExport SEXP mmlasso_MMLassoCpp2(SEXP xjotaSEXP, SEXP yastSEXP, SEXP beta_larsSEXP, SEXP beta_oSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::vec& >::type xjota(xjotaSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type yast(yastSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type beta_lars(beta_larsSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type beta_o(beta_oSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type xjota(xjotaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type yast(yastSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta_lars(beta_larsSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type beta_o(beta_oSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type alpha(alphaSEXP);
     __result = Rcpp::wrap(MMLassoCpp2(xjota, yast, beta_lars, beta_o, alpha));
     return __result;
 END_RCPP
@@ -199,50 +199,50 @@ BEGIN_RCPP
 END_RCPP
 }
 // regrid
-List regrid(arma::mat& x, arma::vec& y, double& lambda);
+List regrid(arma::mat x, arma::vec y, double lambda);
 RcppExport SEXP mmlasso_regrid(SEXP xSEXP, SEXP ySEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< arma::mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     __result = Rcpp::wrap(regrid(x, y, lambda));
     return __result;
 END_RCPP
 }
 // rr_se
-List rr_se(arma::mat& X, arma::vec& y, double& lambda2, double& deltaesc, double& cc_scale, int& nkeep, int& niter, double& epsilon);
+List rr_se(arma::mat& X, arma::vec y, double lambda2, double deltaesc, double cc_scale, int nkeep, int niter, double epsilon);
 RcppExport SEXP mmlasso_rr_se(SEXP XSEXP, SEXP ySEXP, SEXP lambda2SEXP, SEXP deltaescSEXP, SEXP cc_scaleSEXP, SEXP nkeepSEXP, SEXP niterSEXP, SEXP epsilonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double& >::type lambda2(lambda2SEXP);
-    Rcpp::traits::input_parameter< double& >::type deltaesc(deltaescSEXP);
-    Rcpp::traits::input_parameter< double& >::type cc_scale(cc_scaleSEXP);
-    Rcpp::traits::input_parameter< int& >::type nkeep(nkeepSEXP);
-    Rcpp::traits::input_parameter< int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< double& >::type epsilon(epsilonSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type lambda2(lambda2SEXP);
+    Rcpp::traits::input_parameter< double >::type deltaesc(deltaescSEXP);
+    Rcpp::traits::input_parameter< double >::type cc_scale(cc_scaleSEXP);
+    Rcpp::traits::input_parameter< int >::type nkeep(nkeepSEXP);
+    Rcpp::traits::input_parameter< int >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
     __result = Rcpp::wrap(rr_se(X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon));
     return __result;
 END_RCPP
 }
 // rr_se_vec
-List rr_se_vec(arma::mat& X, arma::vec& y, arma::vec& lambda2, arma::vec& deltaesc, double& cc_scale, int& nkeep, int& niter, double& epsilon);
+List rr_se_vec(arma::mat& X, arma::vec y, arma::vec lambda2, arma::vec deltaesc, double cc_scale, int nkeep, int niter, double epsilon);
 RcppExport SEXP mmlasso_rr_se_vec(SEXP XSEXP, SEXP ySEXP, SEXP lambda2SEXP, SEXP deltaescSEXP, SEXP cc_scaleSEXP, SEXP nkeepSEXP, SEXP niterSEXP, SEXP epsilonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type lambda2(lambda2SEXP);
-    Rcpp::traits::input_parameter< arma::vec& >::type deltaesc(deltaescSEXP);
-    Rcpp::traits::input_parameter< double& >::type cc_scale(cc_scaleSEXP);
-    Rcpp::traits::input_parameter< int& >::type nkeep(nkeepSEXP);
-    Rcpp::traits::input_parameter< int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< double& >::type epsilon(epsilonSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type lambda2(lambda2SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type deltaesc(deltaescSEXP);
+    Rcpp::traits::input_parameter< double >::type cc_scale(cc_scaleSEXP);
+    Rcpp::traits::input_parameter< int >::type nkeep(nkeepSEXP);
+    Rcpp::traits::input_parameter< int >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
     __result = Rcpp::wrap(rr_se_vec(X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon));
     return __result;
 END_RCPP
