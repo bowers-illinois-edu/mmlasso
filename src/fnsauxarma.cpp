@@ -1,11 +1,12 @@
 #include <RcppArmadillo.h>
-using namespace Rcpp;
-using namespace arma;
+
 // [[Rcpp::depends(RcppArmadillo)]]
 
+using namespace Rcpp;
+using namespace arma;
 
 // [[Rcpp::export]]
-arma::vec rho_marina(arma::vec & x,double & cw) {
+arma::vec rho_marina(arma::vec x,double cw) {
   int n = x.size();
   arma::vec out(n);
   for(int i = 0; i < n; ++i) {
@@ -18,7 +19,7 @@ arma::vec rho_marina(arma::vec & x,double & cw) {
 }
 
 // [[Rcpp::export]]
-arma::vec rho_bisq(arma::vec & x,double & cw) {
+arma::vec rho_bisq(arma::vec x,double cw) {
   int n = x.size();
   arma::vec out(n);
   for(int i = 0; i < n; ++i) {
@@ -45,7 +46,7 @@ arma::vec psi_marina(arma::vec & x, double & cw){
 }
 
 // [[Rcpp::export]]
-arma::vec weight_marina(arma::vec & x,double & cw){
+arma::vec weight_marina(arma::vec x,double cw){
   int n=x.size();
   arma::vec out(n);
   for(int i = 0; i < n; ++i) {
@@ -61,7 +62,7 @@ arma::vec weight_marina(arma::vec & x,double & cw){
 
 
 // [[Rcpp::export]]
-double Mscale_mar(arma::vec & x,double & b, double & cc) {
+double Mscale_mar(arma::vec x,double & b, double & cc) {
   int n = x.size();
   double sc = median(abs(x)) / 0.6745;
   double sc2 = 0;
@@ -78,8 +79,8 @@ double Mscale_mar(arma::vec & x,double & b, double & cc) {
   return sc;
 }
 
-
-double Mscale_bisq(arma::vec & x,double & b, double & cc,int cuad) {
+// [[Rcpp::export]]
+double Mscale_bisq(arma::vec  x,double  b, double  cc, int cuad) {
   int n = x.size();
   double sc = median(abs(x)) / 0.6745;
   double sc2 = 0;
@@ -272,7 +273,7 @@ List MMLassoCpp2(arma::vec & xjota, arma::vec & yast, arma::vec & beta_lars, arm
 }
 
 // [[Rcpp::export]]
-List desrobrid(arma::mat & x, arma::vec & y, int & niter, double & lam, double & betinte, arma::vec & betinslo, double & cc, double & delsca, double & epsilon){
+List desrobrid(arma::mat x, arma::vec y, int niter, double lam, double betinte, arma::vec betinslo, double cc, double delsca, double epsilon){
   //  IWLS descent for S-Ridge
   //  INPUT
   //  X, y: data
@@ -516,9 +517,6 @@ List rr_se(arma::mat & X, arma::vec & y,double & lambda2, double & deltaesc, dou
   arma::uvec ii = sort_index(critkeep);
   betakeep = betakeep.cols(ii);
 
-
-
-
   //For each candidate initial estimator, we iterate weigthed normal equations niter times until a local minimum of RR-SE objective function is found
   arma::vec crit_fin = vec(5);
   arma::mat beta_fin = mat(p+1,5);
@@ -556,7 +554,7 @@ List rr_se_vec(arma::mat & X, arma::vec & y,arma::vec & lambda2, arma::vec & del
   arma::vec edfs(nlam);
   arma::mat betas(p,nlam);
   for(int i=0 ; i < nlam; i++){
-    tmpres = rr_se( X , y, lambda2(i), deltaesc(i), cc_scale, nkeep, niter, epsilon);
+    tmpres = rr_se(X , y, lambda2(i), deltaesc(i), cc_scale, nkeep, niter, epsilon);
     edfs(i) = as<double>(tmpres["edf"]);
     // Rcpp::Rcout << edfs(i) << std::endl;
     betas.col(i) = as<arma::colvec>(tmpres["coef"]);

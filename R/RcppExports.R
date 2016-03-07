@@ -21,8 +21,20 @@ Mscale_mar <- function(x, b, cc) {
     .Call('mmlasso_Mscale_mar', PACKAGE = 'mmlasso', x, b, cc)
 }
 
+Mscale_bisq <- function(x, b, cc, cuad) {
+    .Call('mmlasso_Mscale_bisq', PACKAGE = 'mmlasso', x, b, cc, cuad)
+}
+
 scale_tau <- function(x) {
     .Call('mmlasso_scale_tau', PACKAGE = 'mmlasso', x)
+}
+
+spa_med <- function(x) {
+    .Call('mmlasso_spa_med', PACKAGE = 'mmlasso', x)
+}
+
+rob_sq <- function(z) {
+    .Call('mmlasso_rob_sq', PACKAGE = 'mmlasso', z)
 }
 
 my_svdecon <- function(x) {
@@ -43,6 +55,14 @@ MMLassoCpp1 <- function(x, y, beta_ini, scale_ini, c1) {
 
 MMLassoCpp2 <- function(xjota, yast, beta_lars, beta_o, alpha) {
     .Call('mmlasso_MMLassoCpp2', PACKAGE = 'mmlasso', xjota, yast, beta_lars, beta_o, alpha)
+}
+
+desrobrid <- function(x, y, niter, lam, betinte, betinslo, cc, delsca, epsilon) {
+    .Call('mmlasso_desrobrid', PACKAGE = 'mmlasso', x, y, niter, lam, betinte, betinslo, cc, delsca, epsilon)
+}
+
+regrid <- function(x, y, lambda) {
+    .Call('mmlasso_regrid', PACKAGE = 'mmlasso', x, y, lambda)
 }
 
 rr_se <- function(X, y, lambda2, deltaesc, cc_scale, nkeep, niter, epsilon) {
