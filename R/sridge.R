@@ -265,7 +265,8 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 		   deltaesc = deltas,  cc_scale = 1,  nkeep,  niter.S,  epsilon = 1e-04)
   betas <- fin$coef
   res <- apply(betas,2,function(b){
-		 ynor - Xnor %*% b[-1] - as.vector(b[1])
+		     ynor - cbind(1,Xnorw) %*% b
+		     ## ynor - Xnorw %*% b[-1] - as.vector(b[1])
 		   })
   edf <- fin$edf
   deltult <- 0.5 * (1 - (edf + 1)/n)  ##  'delta' for final scale
@@ -296,13 +297,15 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 		    lamdasad = lamdasad, deltasad = deltasad)
     return(results)
   } else {
-    resmaker <- function( Xnor,  ynor,  nkeep,  niter.S,  Beigi, numlam.S){
-      force(Xnor); force(ynor); force(nkeep); force(niter.S); force(Beig); force(numlam.S)
+    resmaker <- function(Xnor,  ynor,  nkeep,  niter.S,  Beigi, numlamad){
+      force(Xnor); force(ynor); force(nkeep); force(niter.S); force(Beig); force(numlamad)
       function(lamdasad, deltasad, thebetas){
 	## For each initial model (i.e. vector of betas in thebetas), use those betas as weights and fit another set of models.
-	activ <- which(abs(thebetas[2:length(thebetas)]) > .Machine$double.eps)
+	activ <- which(abs(thebetas[-1]) > .Machine$double.eps)
 	## Take out covariates not chosen by MMLasso and scale the remaining ones
-	wad <- abs(thebetas[2:length(thebetas)][activ])
+	## wad is a vector length of nonzero terms in the original model minus the intercept
+	wad <- abs(thebetas[-1][activ])
+	## Delete columns in Xnor that had zero coefs, scale the rest by first stage coefs
 	Xnorw <- as.matrix(scale(Xnor[, activ], center=FALSE,  scale = 1/wad))
 	## Calculate candidate lambdas for adaptive MM-ridge
 	if(is.null(lamdasad) & is.null(deltasad)){
@@ -313,24 +316,31 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	}
 	fin <- rr_se_vec(X = Xnorw,  y = ynor,  lambda2 = lamdasad,
 			 deltaesc = deltasad,  cc_scale = 1,  nkeep,  niter.S,  epsilon = 1e-04)
-	betas <- fin$coef
-	betasbig <- matrix(0,ncol=length(thebetas),nrow=nrow(fin$coef))
-	betasbig[,activ] <- fin$coef
+	## make a results matrix the same rows as the orginal (one row per term), and one column per lambda
+	betasbig <- matrix(0,ncol=ncol(fin$coef),nrow=ncol(Xnor)+1)
+	## Fill this new matrix with the second stage coefficients for those terms that were non-zero
+	## assuming that first nonzero term in fin$coef is the same as the first number in activ, and second, and third, etc..
+	betasbig[c(1,activ+1),] <- fin$coef
+	## multiplies each column of betasbig[-1,] by the vector wad
 	betasbig[-1,] <- betasbig[-1,]*wad
+	## There is a way to do this next step without iterating. Fix this.
 	res <- apply(betasbig,2,function(b){
-		       ynor - Xnorw %*% b[-1] - as.vector(b[1])
+		       ynor - cbind(1,Xnorw) %*% b
+		       ## ynor - Xnorw %*% b[-1] - as.vector(b[1])
 			 })
-	edfbig<-rep(0,p)
-	edfbig[activ] <- fin$edf
+	##edfbig<-rep(0,p)
+	##edfbig[activ] <- fin$edf
+	## edf is defined for each lambda value, not for each term.
+	edfbig <- fin$edf
 	deltult <- 0.5 * (1 - (edfbig + 1)/n)  ##  'delta' for final scale
 	deltult <- deltult * (deltult > .25) + .25 * ( 1 - (deltult > .25) )
 	fscale <- sapply(1:ncol(res),function(i){
 			   getfscale(thedeltult=deltult[i],
 				     theres=res[,i],theedf=edf[i]) })
-	#  Back from PC to ordinary coordinates
+	#  Back from PC to ordinary coordinates. Also must be a faster matrix only way to do this.
 	betasload <- apply(betasbig[-1,],2,function(b){ Beig %*% b})
-	beta <- rbind(betas[1,],  betasload)
-	results <- list(coef = betasload,  scale = fscale,  edf = edf,
+	betares <- rbind(betasbig[1,],  betasload)
+	results <- list(coef = betares,  scale = fscale,  edf = edf,
 			lamdasad = lamdasad, deltasad = lamdasad)
 	return(results)
 
@@ -342,7 +352,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
       }
     }
 
-    getresults <- resmaker(Xnor,  ynor,  nkeep,  niter.S,  Beig, numlam.S)
+    getresults <- resmaker(Xnor,  ynor,  nkeep,  niter.S,  Beig, numlamad=length(lamdas))
 
     if(ncores > 1){
       ##  assuming name of cluster is cl for now
@@ -363,6 +373,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 			})
     }
 
+    names(results) <- lamdas
     return(results)
   }
 }
