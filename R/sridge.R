@@ -265,7 +265,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 		   deltaesc = deltas,  cc_scale = 1,  nkeep,  niter.S,  epsilon = 1e-04)
   betas <- fin$coef
   res <- apply(betas,2,function(b){
-		     ynor - cbind(1,Xnorw) %*% b
+		     ynor - cbind(1,Xnor) %*% b
 		     ## ynor - Xnorw %*% b[-1] - as.vector(b[1])
 		   })
   edf <- fin$edf
