@@ -264,10 +264,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
   fin <- rr_se_vec(X = Xnor,  y = ynor,  lambda2 = lamdas,
 		   deltaesc = deltas,  cc_scale = 1,  nkeep,  niter.S,  epsilon = 1e-04)
   betas <- fin$coef
-  res <- apply(betas,2,function(b){
-		     ynor - cbind(1,Xnor) %*% b
-		     ## ynor - Xnorw %*% b[-1] - as.vector(b[1])
-		   })
+  res <- as.numeric(ynor) - cbind(1,Xnor) %*% betas
   edf <- fin$edf
   deltult <- 0.5 * (1 - (edf + 1)/n)  ##  'delta' for final scale
   ## deltault should be no greater than .25
@@ -323,11 +320,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	betasbig[c(1,activ+1),] <- fin$coef
 	## multiplies each column of betasbig[-1,] by the vector wad
 	betasbig[-1,] <- betasbig[-1,]*wad
-	## There is a way to do this next step without iterating. Fix this.
-	res <- apply(betasbig,2,function(b){
-		       ynor - cbind(1,Xnorw) %*% b
-		       ## ynor - Xnorw %*% b[-1] - as.vector(b[1])
-			 })
+	res <- as.numeric(ynor) - cbind(1,Xnor) %*% betasbig
 	##edfbig<-rep(0,p)
 	##edfbig[activ] <- fin$edf
 	## edf is defined for each lambda value, not for each term.
