@@ -306,10 +306,10 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	Xnorw <- as.matrix(scale(Xnor[, activ], center=FALSE,  scale = 1/wad))
 	## Calculate candidate lambdas for adaptive MM-ridge
 	if(is.null(lamdasad) & is.null(deltasad)){
-	  lamdasad <- genlambdas(Xnorw, ynor, numlam.S=numlam.S)
-	  lamdasad <- lamdasad[lamdasad[,"lamda"]!=0,]
-	  deltasad <- lamdasad[,"delta"]
-	  lamdasad <- lamdasad[,"lamda"]
+	  lamdasadmat <- genlambdas(Xnorw, ynor, numlam.S=numlam.S)
+	  lamdasadmat <- lamdasadmat[lamdasadmat[,"lamda"]!=0,]
+	  deltasad <- lamdasadmat[,"delta"]
+	  lamdasad <- lamdasadmat[,"lamda"]
 	}
 	fin <- rr_se_vec(X = Xnorw,  y = ynor,  lambda2 = lamdasad,
 			 deltaesc = deltasad,  cc_scale = 1,  nkeep,  niter.S,  epsilon = 1e-04)
@@ -334,7 +334,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	betasload <- apply(betasbig[-1,],2,function(b){ Beig %*% b})
 	betares <- rbind(betasbig[1,],  betasload)
 	results <- list(coef = betares,  scale = fscale,  edf = edf,
-			lamdasad = lamdasad, deltasad = lamdasad)
+			lamdasad = lamdasad, deltasad = deltasad)
 	return(results)
 
 	##  De-normalize beta if required by user
