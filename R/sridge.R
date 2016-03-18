@@ -333,7 +333,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	#  Back from PC to ordinary coordinates. Also must be a faster matrix only way to do this.
 	betasload <- apply(betasbig[-1,],2,function(b){ Beig %*% b})
 	betares <- rbind(betasbig[1,],  betasload)
-	results <- list(coef = betares,  scale = fscale,  edf = edf,
+	results <- list(coef = betares,  scale = fscale,  edf = edfbig,
 			lamdasad = lamdasad, deltasad = deltasad)
 	return(results)
 
