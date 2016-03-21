@@ -352,16 +352,16 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
       clusterExport(cl, c("getresults","getfscale"), envir=environment())
       results <- parLapply(cl, 1:ncol(betas),  function(i){
 			     tmp <- getresults(lamdasad=lamdasad, deltasad=deltasad, thebetas=betas[,i])
-			     tmp[["lamda"]] <- lamdas
-			     tmp[["deltas"]] <- deltas
+			     tmp[["lamda"]] <- rep(lamdas[i],length(tmp[["lamdasad"]]))
+			     tmp[["deltas"]] <- rep(deltas[i],length(tmp[["deltasad"]]))
 			     return(tmp)
 			})
     } else {
       results <- lapply(1:ncol(betas), function(i){
 			  message(i)
 			  tmp <- getresults(lamdasad=lamdasad, deltasad=deltasad, thebetas=betas[,i])
-			  tmp[["lamda"]] <- lamdas
-			  tmp[["deltas"]] <- deltas
+			  tmp[["lamda"]] <- rep(lamdas[i],length(tmp[["lamdasad"]]))
+			  tmp[["deltas"]] <- rep(deltas[i],length(tmp[["deltasad"]]))
 			  return(tmp)
 			})
     }
