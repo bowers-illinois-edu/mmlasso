@@ -259,6 +259,8 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
     pp <- seq(1,  pmax,  length = nlam)
     lamdas <- findlam(privar,  pp)  # find lambdas corresponding to the edf's
     deltas <- 0.5 * (1 - (pp)/n)  # for the M-scale used with Penia-Yohai
+    deltas <- deltas[lamdas > 0] # exclude lamdas that are 0
+    lamdas <- lamdas[lamdas > 0]
   }
 
   fin <- rr_se_vec(X = Xnor,  y = ynor,  lambda2 = lamdas,
@@ -307,7 +309,6 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	## Calculate candidate lambdas for adaptive MM-ridge
 	if(is.null(lamdasad) & is.null(deltasad)){
 	  lamdasadmat <- genlambdas(Xnorw, ynor, numlam.S=numlam.S)
-	  lamdasadmat <- lamdasadmat[lamdasadmat[,"lamda"]!=0,]
 	  deltasad <- lamdasadmat[,"delta"]
 	  lamdasad <- lamdasadmat[,"lamda"]
 	}
@@ -402,6 +403,7 @@ genlambdas <- function(x,  y,  normin = 0,  numlam.S = 30) {
   pp <- seq(1,  pmax,  length = nlam)
   lamdas <- findlam(privar,  pp)  # find lambdas corresponding to the edf's
   deltas <- 0.5 * (1 - (pp)/n)  # for the M-scale used with Penia-Yohai
-
+  deltas <- deltas[lamdas > 0] # exclude lamdas that are 0
+  lamdas <- lamdas[lamdas > 0]
   return(cbind(lamda=lamdas, delta=deltas))
 }
