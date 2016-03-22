@@ -182,6 +182,7 @@ List SPCC(arma::mat & x){
   arma::mat scores = x*svd_Vy;
   arma::vec lamda = rob_sq(scores);
   arma::uvec index = sort_index(lamda);
+  Rcpp::Rcout << index << std::endl;
   arma::vec lamda_ord = sort(lamda);
   svd_Vy = svd_Vy.cols(index);
   scores = scores.cols(index);
@@ -468,6 +469,7 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
   for(int j = 0; j <=p ; ++j) {
     //Remove m observations with the highest forcast change (i.e., m-highest z_ij, order(zj) the sort is increasing)
     ordt = sort_index(Z.col(j));
+    Rcpp::Rcout << j << std::endl;
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
     Xj = Xord.rows(0,n1-1);
@@ -482,6 +484,7 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
 
     //Remove m observations with the lowest forcast change (i.e., m-highest z_ij, order(zj) the sort is decreasing)
     ordt = sort_index(Z.col(j),"descend");
+    Rcpp::Rcout << "line 487" << std::endl;
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
     Xj = Xord.rows(0,n1-1);
@@ -496,6 +499,7 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
 
     //Remove m observations with the highest absolute forcast change (large absolute values)
     ordt = sort_index(abs(Z.col(j)));
+    Rcpp::Rcout << "line 501" << std::endl;
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
     Xj = Xord.rows(0,n1-1);
