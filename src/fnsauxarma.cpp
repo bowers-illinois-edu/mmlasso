@@ -182,7 +182,7 @@ List SPCC(arma::mat & x){
   arma::mat scores = x*svd_Vy;
   arma::vec lamda = rob_sq(scores);
   arma::uvec index = sort_index(lamda);
-  Rcpp::Rcout << index << std::endl;
+  // Rcpp::Rcout << index << std::endl; // A debugging line to print to console
   arma::vec lamda_ord = sort(lamda);
   svd_Vy = svd_Vy.cols(index);
   scores = scores.cols(index);
