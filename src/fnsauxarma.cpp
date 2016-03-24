@@ -437,7 +437,8 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
   arma::vec w = vec(n+p);
   arma::vec eigval_Q = vec(p+1);
   double sigj = 0;
-  h = sum(pow(svd_U,2),1);
+  double eps = 1e-16;
+  h = sum(pow(svd_U,2),1); //sometimes h = 1 and so w = 0. How to fix?
   w = pow(resj / (1-h),2);
   UV = svd_U*svd_V.t();
   Q = UV.t() * diagmat(w) * UV;
@@ -468,8 +469,9 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
 
   for(int j = 0; j <=p ; ++j) {
     //Remove m observations with the highest forcast change (i.e., m-highest z_ij, order(zj) the sort is increasing)
-    ordt = sort_index(Z.col(j));
     Rcpp::Rcout << j << std::endl;
+    Rcpp::Rcout << Z.col(j) << std::endl;
+    ordt = sort_index(Z.col(j));
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
     Xj = Xord.rows(0,n1-1);
@@ -484,7 +486,7 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
 
     //Remove m observations with the lowest forcast change (i.e., m-highest z_ij, order(zj) the sort is decreasing)
     ordt = sort_index(Z.col(j),"descend");
-    Rcpp::Rcout << "line 487" << std::endl;
+    // Rcpp::Rcout << "line 487" << std::endl;
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
     Xj = Xord.rows(0,n1-1);
@@ -499,7 +501,7 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
 
     //Remove m observations with the highest absolute forcast change (large absolute values)
     ordt = sort_index(abs(Z.col(j)));
-    Rcpp::Rcout << "line 501" << std::endl;
+    //Rcpp::Rcout << "line 501" << std::endl;
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
     Xj = Xord.rows(0,n1-1);
