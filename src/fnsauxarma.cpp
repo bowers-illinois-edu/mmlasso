@@ -439,7 +439,9 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
   double sigj = 0;
   double eps = 1e-16;
   h = sum(pow(svd_U,2),1); //sometimes h = 1 and so w = 0. How to fix?
+  h.elem( find( h == 1 ) ) -= eps;
   w = pow(resj / (1-h),2);
+  // Rcpp::Rcout << w(span(0,10)) << std::endl;
   UV = svd_U*svd_V.t();
   Q = UV.t() * diagmat(w) * UV;
   eig_sym(eigval_Q,eigvec_Q,Q);
@@ -469,8 +471,8 @@ List rr_se(arma::mat & X, arma::vec y,double lambda2, double deltaesc, double cc
 
   for(int j = 0; j <=p ; ++j) {
     //Remove m observations with the highest forcast change (i.e., m-highest z_ij, order(zj) the sort is increasing)
-    Rcpp::Rcout << j << std::endl;
-    Rcpp::Rcout << Z.col(j) << std::endl;
+    // Rcpp::Rcout << j << std::endl;
+    // Rcpp::Rcout << Z.col(j) << std::endl;
     ordt = sort_index(Z.col(j));
     Xord = X.rows(ordt);
     yord = y.rows(ordt);
