@@ -288,10 +288,10 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 		     getfscale(thedeltult=deltult[i],
 			       theres=res[,i],theedf=edf[i]) })
   #  Back from PC to ordinary coordinates
-  betaslo <- apply(betas[-1,],2,function(b){ Beig %*% b})
+  betaslo <- apply(betas[-1,,drop=FALSE],2,function(b){ Beig %*% b})
 
   if(!adaptive){
-    betares <- rbind(betas[1,],  betaslo)
+    betares <- rbind(betas[1,,drop=FALSE],  betaslo)
     results <- list(coef = betares,  scale = fscale,  edf = edf,  lamda = lamdas,  delta = deltas,
 		    lamdasad = lamdasad, deltasad = deltasad)
     return(results)
@@ -320,7 +320,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 	## assuming that first nonzero term in fin$coef is the same as the first number in activ, and second, and third, etc..
 	betasbig[c(1,activ+1),] <- fin$coef
 	## multiplies each column of betasbig[-1,] by the vector wad
-	betasbig[-1,] <- betasbig[-1,]*wad
+	betasbig[-1,] <- betasbig[-1,,drop=FALSE]*wad
 	res <- as.numeric(ynor) - cbind(1,Xnor) %*% betasbig
 	##edfbig<-rep(0,p)
 	##edfbig[activ] <- fin$edf
@@ -332,8 +332,8 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 			   getfscale(thedeltult=deltult[i],
 				     theres=res[,i],theedf=edf[i]) })
 	#  Back from PC to ordinary coordinates. Also must be a faster matrix only way to do this.
-	betasload <- apply(betasbig[-1,],2,function(b){ Beig %*% b})
-	betares <- rbind(betasbig[1,],  betasload)
+	betasload <- apply(betasbig[-1,,drop=FALSE],2,function(b){ Beig %*% b})
+	betares <- rbind(betasbig[1,,drop=FALSE],  betasload)
 	results <- list(coef = betares,  scale = fscale,  edf = edfbig,
 			lamdasad = lamdasad, deltasad = deltasad)
 	return(results)
@@ -348,7 +348,8 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 
     getresults <- resmaker(Xnor,  ynor,  nkeep,  niter.S,  Beig, numlamad=length(lamdas))
 
-    if(ncores > 1){
+    if(ncores > 1 & ncol(betas) > 1){
+      ## no point in parallizing when we have only 1 column of betas
       ##  assuming name of cluster is cl for now
       clusterExport(cl, c("getresults","getfscale"), envir=environment())
       results <- parLapply(cl, 1:ncol(betas),  function(i){
