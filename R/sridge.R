@@ -360,7 +360,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 			})
     } else {
       results <- lapply(1:ncol(betas), function(i){
-			  message(i)
+			  ## message(i)
 			  tmp <- getresults(lamdasad=lamdasad, deltasad=deltasad, thebetas=betas[,i])
 			  tmp[["lamda"]] <- rep(lamdas[i],length(tmp[["lamdasad"]]))
 			  tmp[["deltas"]] <- rep(deltas[i],length(tmp[["deltasad"]]))
