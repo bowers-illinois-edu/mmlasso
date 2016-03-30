@@ -368,7 +368,7 @@ sridge2 <- function(x,  y, nkeep = 5,  numlam.S = 30,  niter.S = 50,  normin = 0
 			})
     }
 
-    names(results) <- lamdas
+    ## names(results) <- lamdas
     return(results)
   }
 }
